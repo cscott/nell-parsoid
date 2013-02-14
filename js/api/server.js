@@ -39,5 +39,7 @@ if (cluster.isMaster) {
     console.log('Worker shutting down');
     process.exit(1);
   });
-  app.listen(8000);
+  // CSA: add hook for running on appfog.com, which passes in the listen
+  // port for the app in an environment variable.
+  app.listen(process.env.VCAP_APP_PORT || 8000);
 }
