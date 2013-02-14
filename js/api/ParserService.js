@@ -535,6 +535,10 @@ app.get(new RegExp( '/(' + getInterwikiRE() + ')/(.*)' ), function(req, res) {
 		if ( req.query.cache ) {
 			res.setHeader('Cache-Control', 's-maxage=2592000');
 		}
+		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+		// [CSA] allow cross-domain requests (CORS)
+		res.setHeader('Access-Control-Allow-Origin', '*');
+
 		var tpr = new TemplateRequest( env, target, oldid );
 		tpr.once('src', parse.bind( null, env, req, res, function ( req, res, src, doc ) {
 			res.end(Util.serializeNode(doc.documentElement));
