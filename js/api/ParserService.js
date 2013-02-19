@@ -408,15 +408,21 @@ app.post(/\/_wikitext\/(.*)/, function ( req, res ) {
 		var parser = Util.getParser(env, 'text/x-mediawiki/full'),
 			src = req.body.content.replace(/\r/g, '');
 		parser.on('document', function ( document ) {
-			res.write(document.body.innerHTML);
-			//res.write('<form method=POST><input name="content"></form>');
-			//res.end("hello world\n" + req.method + ' ' + req.params.title);
-			res.write( "<hr>Your wikitext:" );
-			textarea( res, src );
+			if (req.body.format==='html') {
+				res.write(Util.serializeNode(document.documentElement));
+			} else {
+				res.write("<html><body>");
+				res.write(document.body.innerHTML);
+				res.write( "<hr>Your wikitext:" );
+				textarea( res, src );
+				res.write("</body></html>");
+			}
 			res.end('');
 		});
 		try {
 			res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+			// [CSA] allow cross-domain requests (CORS)
+			res.setHeader('Access-Control-Allow-Origin', '*');
 			console.log('starting parsing of ' + req.params[0]);
 			// FIXME: This does not handle includes or templates correctly
 			env.page.src = src;
